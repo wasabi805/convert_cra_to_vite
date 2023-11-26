@@ -1,70 +1,50 @@
-# Getting Started with Create React App
+# Converting CRA to Vite
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+ref : https://dev.to/henriquejensen/migrating-from-create-react-app-to-vite-a-quick-and-easy-guide-5e72
 
-## Available Scripts
+### Issues when converting
 
-In the project directory, you can run:
+### Malform URI
 
-### `npm start`
+comment out the %PUBLIC_URL% , vite doesnt like that syntex
+https://github.com/nuxt/nuxt/issues/13518#issuecomment-1397304949
+https://github.com/vitejs/vite/issues/6482
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Index in the root:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Had to change script reference to index.jsx vs index.js
 
-### `npm test`
+```javascript
+<script type="module" src="/src/index.jsx"></script>
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Jsx syntax
 
-### `npm run build`
+```javascript
+failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.
+/Users/ocampo/Documents/vscode/convert_cra_to_vite/src/index.js:11:22
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+9 | <React.StrictMode>
+10 | <App/>
+11 | </React.StrictMode>
+| ^
+12 | );
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+...to resolve read the error, change your file extensions to .jsx
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### expected a string (for built-in components)
 
-### `npm run eject`
+index.jsx:9 Warning: React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: object.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```javascript
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  // <React> // doesn't like when you wrap App in react
+  <App />
+  // </React>
+  // <div>hello</div>
+);
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+to resolve, just have ReactDOM render App, remove the React App is nested in
